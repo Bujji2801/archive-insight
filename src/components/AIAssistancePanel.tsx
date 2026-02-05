@@ -7,17 +7,26 @@ import { Progress } from "./ui/progress";
 import { Separator } from "./ui/separator";
 import { cn } from "@/lib/utils";
 
+interface MatchedSection {
+  status: "matched" | "different" | "semantically similar";
+  yourContent: string;
+  matchedContent: string;
+}
+
 interface MatchReport {
   existingProjectTitle: string;
   matchedProjectId: string;
-  matchedUserId: string;
+  matchedUserName: string;
+  matchedUserEmail: string;
+  submissionDate: string;
   sections: {
-    technology: "matched" | "different";
-    abstractIntent: "matched" | "different";
-    methodology: "matched" | "different";
-    keywords: number; // percentage
-    title: "matched" | "semantically similar" | "different";
+    technology: MatchedSection;
+    abstractIntent: MatchedSection;
+    methodology: MatchedSection;
+    keywords: { percentage: number; yourKeywords: string[]; matchedKeywords: string[] };
+    title: MatchedSection;
   };
+  overallSimilarity: number;
   explanation: string;
 }
 
@@ -59,6 +68,63 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
     }
   };
 
+  // Simulate detection based on filename patterns (for demo purposes)
+  const detectSimilarity = (filename: string): { exists: boolean; report: MatchReport | null } => {
+    const lowerName = filename.toLowerCase();
+    
+    // Keywords that indicate existing/duplicate projects
+    const duplicateKeywords = ["traffic", "smart", "deep", "learning", "cnn", "vehicle", "detection"];
+    const matchCount = duplicateKeywords.filter(k => lowerName.includes(k)).length;
+    
+    // If filename contains 2+ matching keywords, consider it a duplicate
+    const exists = matchCount >= 2;
+    
+    if (!exists) {
+      return { exists: false, report: null };
+    }
+
+    return {
+      exists: true,
+      report: {
+        existingProjectTitle: "Smart Traffic Management System Using Deep Learning",
+        matchedProjectId: "PROJ-2024-CS-0147",
+        matchedUserName: "Rahul Sharma",
+        matchedUserEmail: "rahul.sharma@university.edu",
+        submissionDate: "March 15, 2024",
+        sections: {
+          technology: {
+            status: "matched",
+            yourContent: "Python, TensorFlow, OpenCV, CNN",
+            matchedContent: "Python, TensorFlow, OpenCV, CNN"
+          },
+          abstractIntent: {
+            status: "matched",
+            yourContent: "Optimize urban traffic flow using AI-based vehicle detection",
+            matchedContent: "Real-time traffic optimization through intelligent vehicle detection"
+          },
+          methodology: {
+            status: "matched",
+            yourContent: "CNN-based vehicle detection with real-time processing",
+            matchedContent: "Convolutional Neural Network for vehicle classification and counting"
+          },
+          keywords: {
+            percentage: 87,
+            yourKeywords: ["traffic", "deep learning", "CNN", "vehicle detection", "optimization", "real-time", "urban"],
+            matchedKeywords: ["traffic", "deep learning", "CNN", "vehicle detection", "smart city", "real-time", "optimization"]
+          },
+          title: {
+            status: "semantically similar",
+            yourContent: filename.replace(/\.[^/.]+$/, ""),
+            matchedContent: "Smart Traffic Management System Using Deep Learning"
+          }
+        },
+        overallSimilarity: 87,
+        explanation:
+          "Your project demonstrates significant overlap with an existing archived project submitted by Rahul Sharma on March 15, 2024. The comparison reveals:\n\n• Technologies: Identical stack (Python, TensorFlow, OpenCV)\n• Problem Statement: Both address urban traffic optimization\n• Methodology: Similar CNN-based vehicle detection approach\n• Keywords: 87% overlap in core technical terms\n\nThis project cannot be registered as it closely matches an existing submission."
+      }
+    };
+  };
+
   const handleFileUpload = async (file: File) => {
     const validTypes = [
       "application/pdf",
@@ -76,29 +142,13 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
     setAnalysisResult(null);
     setMatchReport(null);
 
-    // Simulate AI analysis (in production, this would call your backend)
+    // Simulate AI analysis
     await new Promise((resolve) => setTimeout(resolve, 2500));
 
-    // Simulate result - randomly determine if project exists
-    const exists = Math.random() > 0.5;
+    // Detect based on filename (demo simulation)
+    const { exists, report } = detectSimilarity(file.name);
     setAnalysisResult(exists ? "exists" : "unique");
-
-    if (exists) {
-      setMatchReport({
-        existingProjectTitle: "Smart Traffic Management System Using Deep Learning",
-        matchedProjectId: "proj-001",
-        matchedUserId: "user-101",
-        sections: {
-          technology: "matched",
-          abstractIntent: "matched",
-          methodology: "matched",
-          keywords: 87,
-          title: "semantically similar",
-        },
-        explanation:
-          "The uploaded project demonstrates significant overlap with an existing archived project. The core technologies (Python, TensorFlow, OpenCV) are identical. The problem statement addresses the same urban traffic optimization challenge, and the proposed methodology follows a similar CNN-based vehicle detection approach. The keyword overlap of 87% further supports this classification.",
-      });
-    }
+    setMatchReport(report);
 
     setIsAnalyzing(false);
   };
@@ -109,32 +159,71 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
     setMatchReport(null);
   };
 
-  const SectionMatch = ({
+  const SectionMatchDetail = ({
     label,
-    status,
+    section,
   }: {
     label: string;
-    status: "matched" | "different" | "semantically similar" | number;
+    section: MatchedSection;
   }) => (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-muted-foreground">{label}</span>
-      {typeof status === "number" ? (
-        <div className="flex items-center gap-2">
-          <Progress value={status} className="w-16 h-2" />
-          <span className="text-sm font-medium text-foreground">{status}%</span>
-        </div>
-      ) : (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 mb-2">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-foreground">{label}</span>
         <Badge
-          variant={status === "different" ? "outline" : "secondary"}
+          variant={section.status === "different" ? "outline" : "secondary"}
           className={cn(
             "text-xs",
-            status === "matched" && "bg-destructive/10 text-destructive border-destructive/20",
-            status === "semantically similar" && "bg-warning/10 text-warning border-warning/20"
+            section.status === "matched" && "bg-destructive/10 text-destructive border-destructive/20",
+            section.status === "semantically similar" && "bg-warning/10 text-warning border-warning/20"
           )}
         >
-          {status === "matched" ? "Matched" : status === "semantically similar" ? "Similar" : "Different"}
+          {section.status === "matched" ? "Matched" : section.status === "semantically similar" ? "Similar" : "Different"}
         </Badge>
-      )}
+      </div>
+      <div className="grid gap-2 text-xs">
+        <div className="rounded bg-background p-2">
+          <span className="text-muted-foreground block mb-1">Your Content:</span>
+          <span className="text-foreground">{section.yourContent}</span>
+        </div>
+        <div className="rounded bg-destructive/5 p-2 border border-destructive/10">
+          <span className="text-muted-foreground block mb-1">Matched With:</span>
+          <span className="text-destructive">{section.matchedContent}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const KeywordMatchDetail = ({
+    keywords,
+  }: {
+    keywords: { percentage: number; yourKeywords: string[]; matchedKeywords: string[] };
+  }) => (
+    <div className="rounded-lg border border-border bg-muted/30 p-3 mb-2">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-foreground">Keywords</span>
+        <div className="flex items-center gap-2">
+          <Progress value={keywords.percentage} className="w-16 h-2" />
+          <span className="text-sm font-medium text-destructive">{keywords.percentage}%</span>
+        </div>
+      </div>
+      <div className="grid gap-2 text-xs">
+        <div className="rounded bg-background p-2">
+          <span className="text-muted-foreground block mb-1">Your Keywords:</span>
+          <div className="flex flex-wrap gap-1">
+            {keywords.yourKeywords.map((kw, i) => (
+              <Badge key={i} variant="outline" className="text-xs">{kw}</Badge>
+            ))}
+          </div>
+        </div>
+        <div className="rounded bg-destructive/5 p-2 border border-destructive/10">
+          <span className="text-muted-foreground block mb-1">Matched Keywords:</span>
+          <div className="flex flex-wrap gap-1">
+            {keywords.matchedKeywords.map((kw, i) => (
+              <Badge key={i} variant="outline" className="text-xs bg-destructive/10 text-destructive border-destructive/20">{kw}</Badge>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 
@@ -265,44 +354,56 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
             <div>
               <h4 className="flex items-center gap-2 text-sm font-semibold text-foreground mb-3">
                 <AlertTriangle className="h-4 w-4 text-warning" />
-                Match Report
+                Duplicate Detection Report
               </h4>
 
-              <div className="rounded-lg bg-muted/50 p-3 mb-3">
-                <p className="text-xs text-muted-foreground mb-1">
-                  Existing Project
-                </p>
-                <p className="text-sm font-medium text-foreground">
-                  {matchReport.existingProjectTitle}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  ID: {matchReport.matchedProjectId} | User: {matchReport.matchedUserId}
-                </p>
+              {/* Overall Similarity Score */}
+              <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 mb-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-destructive">Overall Similarity</span>
+                  <span className="text-2xl font-bold text-destructive">{matchReport.overallSimilarity}%</span>
+                </div>
+                <Progress value={matchReport.overallSimilarity} className="mt-2 h-2" />
               </div>
 
-              <div className="space-y-1">
+              {/* Matched With - User Details */}
+              <div className="rounded-lg bg-muted/50 p-3 mb-4 border border-border">
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-                  Section-wise Match Summary
+                  Matched With Existing Project
                 </p>
-                <SectionMatch
-                  label="Technology"
-                  status={matchReport.sections.technology}
+                <p className="text-sm font-semibold text-foreground mb-1">
+                  {matchReport.existingProjectTitle}
+                </p>
+                <div className="grid gap-1 text-xs text-muted-foreground mt-2">
+                  <p><span className="font-medium">Project ID:</span> {matchReport.matchedProjectId}</p>
+                  <p><span className="font-medium">Submitted By:</span> {matchReport.matchedUserName}</p>
+                  <p><span className="font-medium">Email:</span> {matchReport.matchedUserEmail}</p>
+                  <p><span className="font-medium">Submission Date:</span> {matchReport.submissionDate}</p>
+                </div>
+              </div>
+
+              {/* Section-wise Detailed Comparison */}
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
+                  Section-wise Comparison
+                </p>
+                
+                <SectionMatchDetail
+                  label="Technology Stack"
+                  section={matchReport.sections.technology}
                 />
-                <SectionMatch
-                  label="Abstract Intent"
-                  status={matchReport.sections.abstractIntent}
+                <SectionMatchDetail
+                  label="Abstract / Problem Intent"
+                  section={matchReport.sections.abstractIntent}
                 />
-                <SectionMatch
+                <SectionMatchDetail
                   label="Methodology"
-                  status={matchReport.sections.methodology}
+                  section={matchReport.sections.methodology}
                 />
-                <SectionMatch
-                  label="Keywords"
-                  status={matchReport.sections.keywords}
-                />
-                <SectionMatch
+                <KeywordMatchDetail keywords={matchReport.sections.keywords} />
+                <SectionMatchDetail
                   label="Title"
-                  status={matchReport.sections.title}
+                  section={matchReport.sections.title}
                 />
               </div>
 
@@ -310,9 +411,9 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
 
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-                  Explanation
+                  Analysis Summary
                 </p>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                   {matchReport.explanation}
                 </p>
               </div>
