@@ -16,7 +16,7 @@ const ProjectCard = ({ project, onViewDetails, animationDelay = 0 }: ProjectCard
       className="group relative overflow-hidden border-border bg-card transition-all duration-300 hover:shadow-sentinel-lg opacity-0 animate-fade-in-up"
       style={{ animationDelay: `${animationDelay}ms` }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       
       <CardHeader className="pb-3">
         <h3 className="line-clamp-2 text-lg font-semibold leading-tight text-foreground group-hover:text-accent transition-colors">
