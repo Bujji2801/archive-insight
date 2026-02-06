@@ -215,26 +215,20 @@ function compareWithProject(
         },
         dbProject
       )
-    : { matched: false, comparison: { status: "different" as const, yourContent: "Skipped", matchedContent: "Skipped" } };
+    : { matched: false, comparison: { status: "different" as const, yourContent: "Skipped - Technology check failed", matchedContent: "Skipped" } };
   
-  // Step 3: Methodology Check (Hard Stop - only if abstract passed)
-  const methodologyResult = (techResult.matched && abstractResult.matched)
-    ? compareMethodology(uploaded.methodology, dbProject.approach)
-    : { matched: false, comparison: { status: "different" as const, yourContent: "Skipped", matchedContent: "Skipped" } };
-  
-  // Step 4: Keyword Check (Supporting)
+  // Step 3: Keyword Check (Supporting - not a hard stop)
   const keywordResult = compareKeywords(uploaded.keywords, dbProject.keywords);
-  const passedKeywordCheck = keywordResult.percentage >= 70;
   
-  // Step 5: Title Check (Low weight)
+  // Step 4: Title Check (Low weight - supporting only)
   const titleResult = compareTitle(uploaded.title, dbProject.title);
   
-  // Final decision: ALL mandatory conditions must be met
-  const isFullMatch = 
-    techResult.matched && 
-    abstractResult.matched && 
-    methodologyResult.matched && 
-    passedKeywordCheck;
+  // Methodology comparison for display purposes only (not a deciding factor)
+  const methodologyResult = compareMethodology(uploaded.methodology, dbProject.approach);
+  
+  // FINAL DECISION: Only Technology + Abstract Intent are mandatory
+  // A project is "EXISTS" ONLY if BOTH conditions are met
+  const isFullMatch = techResult.matched && abstractResult.matched;
   
   return {
     projectId: dbProject.id,
@@ -247,8 +241,8 @@ function compareWithProject(
     title: titleResult,
     passedTechCheck: techResult.matched,
     passedAbstractCheck: abstractResult.matched,
-    passedMethodologyCheck: methodologyResult.matched,
-    passedKeywordCheck,
+    passedMethodologyCheck: methodologyResult.matched, // For display only
+    passedKeywordCheck: keywordResult.percentage >= 70, // For display only
     isFullMatch
   };
 }
@@ -350,24 +344,25 @@ export function analyzeDocument(filename: string): MatchReport {
   let explanation: string;
   if (matchedProject) {
     explanation = `Your project matches an existing submission "${matchedProject.projectTitle}" (${matchedProject.projectId}).\n\n` +
-      `• Technologies: ${matchedProject.passedTechCheck ? "✓ Matched" : "✗ Different"}\n` +
-      `• Abstract Intent: ${matchedProject.passedAbstractCheck ? "✓ Matched" : "✗ Different"}\n` +
-      `• Methodology: ${matchedProject.passedMethodologyCheck ? "✓ Matched" : "✗ Different"}\n` +
-      `• Keywords: ${matchedProject.keywords.percentage}% overlap ${matchedProject.passedKeywordCheck ? "✓" : "✗"}\n\n` +
-      `All mandatory conditions are met. This project cannot be registered as it closely matches an existing submission.`;
+      `MANDATORY CONDITIONS (both must match):\n` +
+      `• Technologies: ${matchedProject.passedTechCheck ? "✓ MATCHED" : "✗ Different"}\n` +
+      `• Abstract Intent: ${matchedProject.passedAbstractCheck ? "✓ MATCHED" : "✗ Different"}\n\n` +
+      `SUPPORTING CHECKS:\n` +
+      `• Keywords: ${matchedProject.keywords.percentage}% overlap\n` +
+      `• Title: ${matchedProject.title.status}\n\n` +
+      `Both mandatory conditions are met. This project cannot be registered as it closely matches an existing submission.`;
   } else {
     const closestMatch = comparisons.reduce((prev, curr) => {
-      const prevScore = (prev.passedTechCheck ? 1 : 0) + (prev.passedAbstractCheck ? 1 : 0) + (prev.passedMethodologyCheck ? 1 : 0);
-      const currScore = (curr.passedTechCheck ? 1 : 0) + (curr.passedAbstractCheck ? 1 : 0) + (curr.passedMethodologyCheck ? 1 : 0);
+      const prevScore = (prev.passedTechCheck ? 1 : 0) + (prev.passedAbstractCheck ? 1 : 0);
+      const currScore = (curr.passedTechCheck ? 1 : 0) + (curr.passedAbstractCheck ? 1 : 0);
       return currScore > prevScore ? curr : prev;
     });
     
     explanation = `Your project is UNIQUE and does not match any existing submissions.\n\n` +
       `Closest comparison was with "${closestMatch.projectTitle}":\n` +
-      `• Technologies: ${closestMatch.passedTechCheck ? "Matched" : "Different"}\n` +
-      `• Abstract Intent: ${closestMatch.passedAbstractCheck ? "Matched" : "Different"}\n` +
-      `• Methodology: ${closestMatch.passedMethodologyCheck ? "Matched" : "Different"}\n` +
-      `• Keywords: ${closestMatch.keywords.percentage}% overlap\n\n` +
+      `MANDATORY CONDITIONS:\n` +
+      `• Technologies: ${closestMatch.passedTechCheck ? "Matched" : "✗ DIFFERENT (Hard Stop)"}\n` +
+      `• Abstract Intent: ${closestMatch.passedAbstractCheck ? "Matched" : "✗ DIFFERENT (Hard Stop)"}\n\n` +
       `At least one mandatory condition failed, confirming this is a unique project.`;
   }
   
