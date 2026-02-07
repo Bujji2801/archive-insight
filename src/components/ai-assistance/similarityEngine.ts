@@ -6,9 +6,11 @@ import {
   SectionComparison,
   KeywordComparison
 } from "./types";
+import { parseDocumentContent, simulateDocumentParsing } from "./documentParser";
 
-// Technology name normalization map
+// Technology name normalization map - extended for better matching
 const techNormalization: Record<string, string> = {
+  // Abbreviations
   "dl": "deep learning",
   "ml": "machine learning",
   "ai": "artificial intelligence",
@@ -28,11 +30,33 @@ const techNormalization: Record<string, string> = {
   "iot": "internet of things",
   "ar": "augmented reality",
   "vr": "virtual reality",
+  // Full names to lowercase versions
+  "tensorflow": "tensorflow",
+  "pytorch": "pytorch",
+  "opencv": "opencv",
+  "open cv": "opencv",
+  "yolo": "yolo",
+  "postgresql": "postgresql",
+  "postgres": "postgresql",
+  "flask": "flask",
+  "react": "react",
+  "node.js": "nodejs",
+  "nodejs": "nodejs",
+  "python": "python",
+  "deep learning": "deep learning",
+  "machine learning": "machine learning",
+  "convolutional neural network": "cnn",
+  "computer vision": "computer vision",
 };
 
 function normalizeTechnology(tech: string): string {
   const lower = tech.toLowerCase().trim();
-  return techNormalization[lower] || lower;
+  // First check exact match in normalization map
+  if (techNormalization[lower]) {
+    return techNormalization[lower];
+  }
+  // Return lowercase version
+  return lower;
 }
 
 function normalizeKeyword(keyword: string): string {
@@ -47,15 +71,43 @@ function compareTechnologies(
   const normalizedUploaded = uploadedTechs.map(normalizeTechnology);
   const normalizedDb = dbTechs.map(normalizeTechnology);
   
-  // Check if at least 60% of technologies overlap
-  const matchingTechs = normalizedUploaded.filter(tech => 
-    normalizedDb.some(dbTech => 
-      dbTech.includes(tech) || tech.includes(dbTech) || dbTech === tech
-    )
-  );
+  console.log("[TechCheck] Uploaded technologies:", uploadedTechs);
+  console.log("[TechCheck] Normalized uploaded:", normalizedUploaded);
+  console.log("[TechCheck] DB technologies:", dbTechs);
+  console.log("[TechCheck] Normalized DB:", normalizedDb);
+  
+  // Check if at least 60% of uploaded technologies are found in DB
+  const matchingTechs: string[] = [];
+  
+  for (const uploadedTech of normalizedUploaded) {
+    const found = normalizedDb.some(dbTech => {
+      // Check for exact match, substring match, or semantic equivalence
+      const isMatch = dbTech === uploadedTech || 
+        dbTech.includes(uploadedTech) || 
+        uploadedTech.includes(dbTech) ||
+        // Handle special cases
+        (uploadedTech === "deep learning" && (dbTech.includes("tensorflow") || dbTech.includes("pytorch") || dbTech.includes("cnn"))) ||
+        (uploadedTech === "cnn" && dbTech.includes("deep learning")) ||
+        (uploadedTech === "computer vision" && dbTech.includes("opencv"));
+      
+      if (isMatch) {
+        console.log(`[TechCheck] ✓ Match: "${uploadedTech}" matches "${dbTech}"`);
+      }
+      return isMatch;
+    });
+    
+    if (found) {
+      matchingTechs.push(uploadedTech);
+    } else {
+      console.log(`[TechCheck] ✗ No match for: "${uploadedTech}"`);
+    }
+  }
   
   const overlapPercentage = (matchingTechs.length / normalizedUploaded.length) * 100;
   const matched = overlapPercentage >= 60;
+  
+  console.log(`[TechCheck] Result: ${matchingTechs.length}/${normalizedUploaded.length} = ${overlapPercentage.toFixed(1)}% (threshold: 60%)`);
+  console.log(`[TechCheck] Status: ${matched ? "MATCHED" : "DIFFERENT"}`);
   
   return {
     matched,
@@ -247,85 +299,38 @@ function compareWithProject(
   };
 }
 
-// Simulate document extraction from filename (demo purposes)
+// Extract document info using the document parser
 export function extractDocumentInfo(filename: string): ExtractedDocumentInfo {
-  const name = filename.toLowerCase().replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+  console.log("[SimilarityEngine] Extracting document info from:", filename);
   
-  // Define project templates based on keywords in filename
-  const projectTemplates: { keywords: string[]; info: Partial<ExtractedDocumentInfo> }[] = [
-    {
-      keywords: ["traffic", "smart", "deep", "learning", "cnn", "vehicle", "detection"],
-      info: {
-        title: "Traffic Management Using Deep Learning",
-        technologies: ["Python", "TensorFlow", "OpenCV", "CNN", "Deep Learning"],
-        problemStatement: "Urban traffic congestion leads to economic losses and pollution",
-        objective: "Develop intelligent traffic management using deep learning for real-time analysis",
-        approach: "CNN-based vehicle detection with real-time processing",
-        expectedOutcome: "30% reduction in wait times and improved traffic flow",
-        methodology: "Convolutional neural networks for vehicle detection and traffic optimization",
-        keywords: ["traffic", "deep learning", "CNN", "vehicle detection", "optimization", "real-time"]
-      }
-    },
-    {
-      keywords: ["blockchain", "credential", "verification", "academic", "certificate"],
-      info: {
-        title: "Blockchain Academic Credential System",
-        technologies: ["Solidity", "Ethereum", "React", "Blockchain", "Smart Contracts"],
-        problemStatement: "Academic credential fraud is a growing problem worldwide",
-        objective: "Create tamper-proof decentralized credential verification system",
-        approach: "Smart contracts store cryptographic hashes of credentials",
-        expectedOutcome: "Instant verification and elimination of forgery",
-        methodology: "Blockchain-based storage with smart contract verification",
-        keywords: ["blockchain", "credentials", "verification", "smart contracts", "Ethereum"]
-      }
-    },
-    {
-      keywords: ["mental", "health", "nlp", "chatbot", "sentiment"],
-      info: {
-        title: "NLP Mental Health Support Chatbot",
-        technologies: ["Python", "BERT", "NLP", "FastAPI", "Sentiment Analysis"],
-        problemStatement: "Mental health services are overwhelmed with long wait times",
-        objective: "Develop NLP chatbot for 24/7 mental health support",
-        approach: "BERT models analyze messages for emotional content and distress",
-        expectedOutcome: "Improved accessibility to mental health support",
-        methodology: "Natural language processing with sentiment analysis and empathetic response generation",
-        keywords: ["NLP", "mental health", "chatbot", "BERT", "sentiment analysis"]
-      }
-    },
-    {
-      keywords: ["iot", "agriculture", "sensor", "farm", "precision"],
-      info: {
-        title: "IoT Precision Agriculture System",
-        technologies: ["Arduino", "Raspberry Pi", "Python", "AWS IoT", "Sensors"],
-        problemStatement: "Traditional farming leads to inefficient resource usage",
-        objective: "Implement IoT monitoring for data-driven crop management",
-        approach: "Distributed sensor nodes collect soil and weather data",
-        expectedOutcome: "20% reduction in water usage and improved yields",
-        methodology: "IoT sensor network with edge computing and cloud analytics",
-        keywords: ["IoT", "agriculture", "sensors", "monitoring", "precision farming"]
-      }
-    }
-  ];
+  // Simulate document parsing (in production, this would read actual file content)
+  const { text, success } = simulateDocumentParsing(filename);
   
-  // Find matching template based on filename keywords
-  for (const template of projectTemplates) {
-    const matchCount = template.keywords.filter(k => name.includes(k)).length;
-    if (matchCount >= 2) {
-      return template.info as ExtractedDocumentInfo;
-    }
+  if (!success) {
+    console.error("[SimilarityEngine] Failed to parse document");
+    // Return default unique project
+    return {
+      title: filename.replace(/\.[^/.]+$/, ""),
+      technologies: ["React", "Node.js", "MongoDB"],
+      problemStatement: "A novel problem statement not found in existing projects",
+      objective: "To achieve a unique objective through innovative methods",
+      approach: "A completely new approach not seen in existing submissions",
+      expectedOutcome: "Novel outcomes that differ from existing work",
+      methodology: "Unique methodology involving new techniques and frameworks",
+      keywords: ["innovation", "novel", "unique", "new approach"]
+    };
   }
   
-  // Default: completely new/unique project
-  return {
-    title: filename.replace(/\.[^/.]+$/, ""),
-    technologies: ["React", "Node.js", "MongoDB"],
-    problemStatement: "A novel problem statement not found in existing projects",
-    objective: "To achieve a unique objective through innovative methods",
-    approach: "A completely new approach not seen in existing submissions",
-    expectedOutcome: "Novel outcomes that differ from existing work",
-    methodology: "Unique methodology involving new techniques and frameworks",
-    keywords: ["innovation", "novel", "unique", "new approach"]
-  };
+  // Parse the document content
+  const extractedInfo = parseDocumentContent(text, filename);
+  
+  console.log("[SimilarityEngine] Extracted info:", {
+    title: extractedInfo.title,
+    technologies: extractedInfo.technologies,
+    keywordCount: extractedInfo.keywords.length
+  });
+  
+  return extractedInfo;
 }
 
 // Main analysis function
