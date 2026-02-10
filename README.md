@@ -1,73 +1,57 @@
-# Welcome to your Lovable project
+PlagioSense: Semantic & Rule-Based Discovery
+PlagioSense is an elite, high-fidelity academic project explorer designed to solve the challenge of idea-level duplication in university settings. Built with a "Mastery through Curiosity" mindset, it leverages semantic analysis and a premium "Editorial Light" aesthetic to provide transparent, explainable project audits.
 
-## Project info
+✨ Key Features
+Semantic Layered Scanning: A multi-layered engine that analyzes abstracts, keywords, and intent using NLP techniques like Cosine Similarity.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Bento Grid Explorer: A high-performance, responsive project directory with "Quick View" hover states and smooth Framer Motion transitions.
 
-## How can I edit this code?
+Interactive Creative Engine: A signature ParticleCanvas Hero section and floating background orbs that respond to user interaction.
 
-There are several ways of editing your application.
+Elite UI Architecture: A professional-grade Light Mode design inspired by Heizen.work, utilizing Geist/Inter typography and a minimalist 1px border strategy.
 
-**Use Lovable**
+Project Roadmap: AI-driven suggestions for base papers and technical stack upgrades to foster original academic contributions.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+🛠️ Technical Stack
+Framework: React 18 with Vite 5 for high-speed delivery.
 
-Changes made via Lovable will be committed automatically to this repo.
+Language: TypeScript 5.8 for strict, production-ready typing.
 
-**Use your preferred IDE**
+Styling: Tailwind CSS 3 & shadcn/ui customized for an "Editorial" aesthetic.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Animations: Framer Motion for zero-regression, smooth layout transitions.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Intelligence: Heuristic token-matching engine (Architecture ready for TanStack Query & RAG integration).
 
-Follow these steps:
+🚀 Getting Started
+Prerequisites
+Node.js (Latest LTS)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+npm
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+Installation
+Bash
+# Clone your personal elite fork
+git clone https://github.com/Sandeep010-hub/archive-insight.git
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Navigate to the project
+cd archive-insight
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Install production dependencies
+npm install
+
+# Launch the development server
 npm run dev
-```
+🏛️ Project Architecture
+The project follows a Feature-Sliced-ish directory structure for high maintainability:
 
-**Edit a file directly in GitHub**
+src/components/ui: Customized shadcn/ui primitives.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+src/components/features: High-level modules like the AIAssistancePanel.
 
-**Use GitHub Codespaces**
+src/contexts: Global state management including Mock Auth.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+src/pages: High-fidelity routes including the Master Explorer.
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+📝 License
+This project is part of the Computer Science & Engineering Department Academic Year 2025–26.
