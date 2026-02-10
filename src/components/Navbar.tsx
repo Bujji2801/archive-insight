@@ -1,79 +1,104 @@
-import { Shield, User, Github, Linkedin } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Shield, User, Github, Linkedin, LogOut, PenTool } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
-
-interface NavbarProps {
-  activeSection?: string;
-  onNavigate?: (section: string) => void;
-}
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
-  { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "how-to-use", label: "How to Use" },
-  { id: "explore", label: "Explore Projects" },
+  { path: "/explore", label: "Explore" },
+  { path: "/scanner", label: "AI Scanner" },
+  { path: "/how-to-use", label: "Guide" },
 ];
 
-const Navbar = ({ activeSection = "explore", onNavigate }: NavbarProps) => {
-  return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-              <Shield className="h-5 w-5 text-primary-foreground" />
-              <div className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-accent" />
-            </div>
-            <span className="text-xl font-semibold tracking-tight text-foreground">
-              SentinelFlow
-            </span>
-          </div>
+export default function Navbar() {
+  const location = useLocation();
+  const { isAuthenticated, logout } = useAuth();
+  const { scrollY } = useScroll();
+  const navHeight = useTransform(scrollY, [0, 80], ["5rem", "3.5rem"]);
 
-          {/* Navigation Links */}
-          <div className="hidden items-center gap-1 md:flex">
-            {navLinks.map((link) => (
-              <button
-                key={link.id}
-                onClick={() => onNavigate?.(link.id)}
+  return (
+    <motion.nav
+      style={{ height: navHeight }}
+      className="nav-glass fixed top-0 left-0 right-0 z-50 w-full border-b border-slate-200/50"
+    >
+      <div className="container mx-auto flex h-full items-center justify-between px-4">
+        <Link
+          to="/"
+          className="flex items-center gap-3 group"
+        >
+          <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 shadow-lg shadow-slate-900/20 group-hover:scale-105 transition-transform duration-300">
+            <PenTool className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-2xl font-editorial font-bold tracking-tight text-slate-900">
+            Parallax
+          </span>
+        </Link>
+
+        <div className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => {
+            const active = location.pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
                 className={cn(
-                  "px-4 py-2 text-sm font-medium transition-colors rounded-md",
-                  activeSection === link.id
-                    ? "text-accent bg-accent/10"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
+                  active
+                    ? "text-indigo-600 bg-indigo-50"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 )}
               >
                 {link.label}
-              </button>
-            ))}
-          </div>
+              </Link>
+            );
+          })}
+        </div>
 
-          {/* Right Section */}
-          <div className="flex items-center gap-3">
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
+        <div className="flex items-center gap-2">
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 text-slate-400 transition-colors hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+            aria-label="LinkedIn"
+          >
+            <Linkedin className="h-5 w-5 stroke-2" />
+          </a>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 text-slate-400 transition-colors hover:text-indigo-600 hover:bg-indigo-50 rounded-lg"
+            aria-label="GitHub"
+          >
+            <Github className="h-5 w-5 stroke-2" />
+          </a>
+          {isAuthenticated ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-transparent hover:border-indigo-100"
+              onClick={logout}
+              aria-label="Log out"
             >
-              <Linkedin className="h-5 w-5" />
-            </a>
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Github className="h-5 w-5" />
-            </a>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <User className="h-5 w-5" />
+              <LogOut className="h-5 w-5 stroke-2" />
             </Button>
-          </div>
+          ) : (
+            <Button
+              variant="default"
+              size="sm"
+              className="rounded-full bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/20 border border-transparent hover:border-slate-700 transition-all duration-300"
+              asChild
+            >
+              <Link to="/auth/login" className="flex items-center gap-2 px-4">
+                <User className="h-4 w-4 stroke-2" />
+                <span>Sign in</span>
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
-};
-
-export default Navbar;
+}

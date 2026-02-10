@@ -15,7 +15,7 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
   { pattern: /\b(pytorch|py\s*torch)\b/gi, normalized: "PyTorch" },
   { pattern: /\bkeras\b/gi, normalized: "Keras" },
   { pattern: /\b(scikit[- ]learn|sklearn)\b/gi, normalized: "scikit-learn" },
-  
+
   // Programming languages
   { pattern: /\bpython\b/gi, normalized: "Python" },
   { pattern: /\b(javascript|js)\b/gi, normalized: "JavaScript" },
@@ -24,7 +24,7 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
   { pattern: /\b(c\+\+|cpp)\b/gi, normalized: "C++" },
   { pattern: /\brust\b/gi, normalized: "Rust" },
   { pattern: /\bsolidity\b/gi, normalized: "Solidity" },
-  
+
   // Frameworks
   { pattern: /\breact\b/gi, normalized: "React" },
   { pattern: /\bangular\b/gi, normalized: "Angular" },
@@ -34,18 +34,18 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
   { pattern: /\bfast\s*api\b/gi, normalized: "FastAPI" },
   { pattern: /\bnode(\.js)?\b/gi, normalized: "Node.js" },
   { pattern: /\bspring\s*boot\b/gi, normalized: "Spring Boot" },
-  
+
   // Computer Vision
   { pattern: /\b(opencv|open\s*cv)\b/gi, normalized: "OpenCV" },
   { pattern: /\byolo\b/gi, normalized: "YOLO" },
-  
+
   // Databases
   { pattern: /\b(postgresql|postgres)\b/gi, normalized: "PostgreSQL" },
   { pattern: /\bmongodb\b/gi, normalized: "MongoDB" },
   { pattern: /\bmysql\b/gi, normalized: "MySQL" },
   { pattern: /\bredis\b/gi, normalized: "Redis" },
   { pattern: /\binfluxdb\b/gi, normalized: "InfluxDB" },
-  
+
   // Cloud/DevOps
   { pattern: /\b(kubernetes|k8s)\b/gi, normalized: "Kubernetes" },
   { pattern: /\bdocker\b/gi, normalized: "Docker" },
@@ -53,17 +53,17 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
   { pattern: /\baws\s*iot\b/gi, normalized: "AWS IoT" },
   { pattern: /\bazure\b/gi, normalized: "Azure" },
   { pattern: /\bgcp\b/gi, normalized: "Google Cloud Platform" },
-  
+
   // Blockchain
   { pattern: /\bethereum\b/gi, normalized: "Ethereum" },
   { pattern: /\bweb3(\.js)?\b/gi, normalized: "Web3.js" },
   { pattern: /\bipfs\b/gi, normalized: "IPFS" },
   { pattern: /\bsmart\s*contracts?\b/gi, normalized: "Smart Contracts" },
-  
+
   // Hardware/IoT
   { pattern: /\barduino\b/gi, normalized: "Arduino" },
   { pattern: /\braspberry\s*pi\b/gi, normalized: "Raspberry Pi" },
-  
+
   // AI/ML Concepts (also treated as technologies)
   { pattern: /\b(cnn|convolutional\s*neural\s*network)\b/gi, normalized: "CNN" },
   { pattern: /\b(rnn|recurrent\s*neural\s*network)\b/gi, normalized: "RNN" },
@@ -77,7 +77,7 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
   { pattern: /\b(ar|augmented\s*reality)\b/gi, normalized: "Augmented Reality" },
   { pattern: /\b(vr|virtual\s*reality)\b/gi, normalized: "Virtual Reality" },
   { pattern: /\bfederated\s*learning\b/gi, normalized: "Federated Learning" },
-  
+
   // Other
   { pattern: /\bunity\b/gi, normalized: "Unity" },
   { pattern: /\b(arcore|ar\s*core)\b/gi, normalized: "ARCore" },
@@ -89,14 +89,14 @@ const TECHNOLOGY_PATTERNS: { pattern: RegExp; normalized: string }[] = [
 
 // Section header patterns to identify document structure
 const SECTION_PATTERNS = {
-  title: /^(?:title|project\s*title|name)\s*[:—\-]?\s*(.+)/im,
-  problemStatement: /(?:problem\s*statement|problem|issue|challenge)\s*[:—\-]?\s*([\s\S]*?)(?=(?:objective|approach|methodology|expected|conclusion|$))/im,
-  objective: /(?:objective|aim|goal|purpose)\s*[:—\-]?\s*([\s\S]*?)(?=(?:approach|methodology|problem|expected|conclusion|$))/im,
-  approach: /(?:approach|methodology|method|proposed\s*(?:solution|system|method))\s*[:—\-]?\s*([\s\S]*?)(?=(?:objective|problem|expected|conclusion|result|$))/im,
-  expectedOutcome: /(?:expected\s*(?:outcome|result)|outcome|result|expected)\s*[:—\-]?\s*([\s\S]*?)(?=(?:objective|problem|approach|conclusion|$))/im,
-  conclusion: /(?:conclusion|summary|future\s*work)\s*[:—\-]?\s*([\s\S]*?)$/im,
-  keywords: /(?:keywords?|tags?|key\s*terms?)\s*[:—\-]?\s*(.+)/im,
-  technologies: /(?:technologies?\s*used|tech\s*stack|tools?\s*(?:and\s*technologies?)?|software\s*used)\s*[:—\-]?\s*(.+)/im,
+  title: /^(?:title|project\s*title|name)\s*[:—]?\s*(.+)/im,
+  problemStatement: /(?:problem\s*statement|problem|issue|challenge)\s*[:—]?\s*([\s\S]*?)(?=(?:objective|approach|methodology|expected|conclusion|$))/im,
+  objective: /(?:objective|aim|goal|purpose)\s*[:—]?\s*([\s\S]*?)(?=(?:approach|methodology|problem|expected|conclusion|$))/im,
+  approach: /(?:approach|methodology|method|proposed\s*(?:solution|system|method))\s*[:—]?\s*([\s\S]*?)(?=(?:objective|problem|expected|conclusion|result|$))/im,
+  expectedOutcome: /(?:expected\s*(?:outcome|result)|outcome|result|expected)\s*[:—]?\s*([\s\S]*?)(?=(?:objective|problem|approach|conclusion|$))/im,
+  conclusion: /(?:conclusion|summary|future\s*work)\s*[:—]?\s*([\s\S]*?)$/im,
+  keywords: /(?:keywords?|tags?|key\s*terms?)\s*[:—]?\s*(.+)/im,
+  technologies: /(?:technologies?\s*used|tech\s*stack|tools?\s*(?:and\s*technologies?)?|software\s*used)\s*[:—]?\s*(.+)/im,
 };
 
 /**
@@ -104,13 +104,13 @@ const SECTION_PATTERNS = {
  */
 export function extractTechnologies(text: string): string[] {
   const foundTechnologies = new Set<string>();
-  
+
   for (const { pattern, normalized } of TECHNOLOGY_PATTERNS) {
     if (pattern.test(text)) {
       foundTechnologies.add(normalized);
     }
   }
-  
+
   // Also check for explicitly listed technologies section
   const techMatch = text.match(SECTION_PATTERNS.technologies);
   if (techMatch) {
@@ -125,7 +125,7 @@ export function extractTechnologies(text: string): string[] {
       }
     }
   }
-  
+
   return Array.from(foundTechnologies);
 }
 
@@ -140,7 +140,7 @@ export function extractKeywords(text: string): string[] {
       .map(k => k.trim().replace(/^["']|["']$/g, ''))
       .filter(k => k.length > 1 && k.length < 50);
   }
-  
+
   // Fallback: extract common academic keywords from the text
   const commonKeywords = [
     "machine learning", "deep learning", "artificial intelligence", "neural network",
@@ -150,7 +150,7 @@ export function extractKeywords(text: string): string[] {
     "automation", "security", "privacy", "healthcare", "education",
     "agriculture", "manufacturing", "traffic", "management"
   ];
-  
+
   const textLower = text.toLowerCase();
   return commonKeywords.filter(kw => textLower.includes(kw));
 }
@@ -179,17 +179,17 @@ export function extractTitle(text: string, filename: string): string {
   if (titleMatch && titleMatch[1]) {
     return titleMatch[1].trim().substring(0, 200);
   }
-  
+
   // Try first non-empty line as title
   const lines = text.split('\n').filter(l => l.trim().length > 0);
   if (lines.length > 0) {
     const firstLine = lines[0].trim();
     // If first line looks like a title (not too long, no special chars)
-    if (firstLine.length < 150 && !/[:—\-]/.test(firstLine)) {
+    if (firstLine.length < 150 && !/[:—]/.test(firstLine)) {
       return firstLine;
     }
   }
-  
+
   // Fallback to filename
   return filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
 }
@@ -201,8 +201,8 @@ export function parseDocumentContent(text: string, filename: string): ExtractedD
   const title = extractTitle(text, filename);
   const technologies = extractTechnologies(text);
   const keywords = extractKeywords(text);
-  
-  const problemStatement = extractSection(text, SECTION_PATTERNS.problemStatement) || 
+
+  const problemStatement = extractSection(text, SECTION_PATTERNS.problemStatement) ||
     "Problem statement not found in document";
   const objective = extractSection(text, SECTION_PATTERNS.objective) ||
     "Objective not found in document";
@@ -210,7 +210,7 @@ export function parseDocumentContent(text: string, filename: string): ExtractedD
     "Approach/methodology not found in document";
   const expectedOutcome = extractSection(text, SECTION_PATTERNS.expectedOutcome) ||
     "Expected outcome not found in document";
-  
+
   console.log("[DocumentParser] Extracted content:", {
     title,
     technologies,
@@ -218,7 +218,7 @@ export function parseDocumentContent(text: string, filename: string): ExtractedD
     hasProblemStatement: !!problemStatement,
     hasObjective: !!objective,
   });
-  
+
   return {
     title,
     technologies,
@@ -237,10 +237,10 @@ export function parseDocumentContent(text: string, filename: string): ExtractedD
  */
 export function simulateDocumentParsing(filename: string): { text: string; success: boolean } {
   const name = filename.toLowerCase();
-  
+
   // Simulate content based on filename keywords (for demo)
   // In production, this would be actual file content from PDF/DOCX parsing
-  
+
   if (name.includes("traffic") || name.includes("deep learning") || name.includes("smart")) {
     return {
       success: true,
@@ -270,7 +270,7 @@ export function simulateDocumentParsing(filename: string): { text: string; succe
       `
     };
   }
-  
+
   if (name.includes("blockchain") || name.includes("credential") || name.includes("certificate")) {
     return {
       success: true,
@@ -300,7 +300,7 @@ export function simulateDocumentParsing(filename: string): { text: string; succe
       `
     };
   }
-  
+
   if (name.includes("nlp") || name.includes("mental") || name.includes("health") || name.includes("chatbot")) {
     return {
       success: true,
@@ -330,7 +330,7 @@ export function simulateDocumentParsing(filename: string): { text: string; succe
       `
     };
   }
-  
+
   if (name.includes("iot") || name.includes("agriculture") || name.includes("sensor") || name.includes("farm")) {
     return {
       success: true,
@@ -360,7 +360,7 @@ export function simulateDocumentParsing(filename: string): { text: string; succe
       `
     };
   }
-  
+
   // Default: unique project with different technologies
   return {
     success: true,

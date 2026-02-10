@@ -45,17 +45,13 @@
     --slate-medium: 215 15% 55%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
-
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(220 60% 20%) 0%, hsl(220 50% 30%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(210 100% 45%) 0%, hsl(210 100% 55%) 100%);
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(220 60% 20% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(220 60% 20% / 0.08), 0 2px 4px -2px hsl(220 60% 20% / 0.05);
-    --shadow-lg: 0 10px 15px -3px hsl(220 60% 20% / 0.1), 0 4px 6px -4px hsl(220 60% 20% / 0.05);
-    --shadow-xl: 0 20px 25px -5px hsl(220 60% 20% / 0.1), 0 8px 10px -6px hsl(220 60% 20% / 0.05);
+    /* Heizen signature */
+    --heizen-navy: #0a0a0a;
+    --heizen-white: #ffffff;
+    --heizen-steel: #3b82f6;
+    --glass-light: rgba(255, 255, 255, 0.7);
+    --glass-dark: rgba(0, 0, 0, 0.4);
+    --border-heizen: rgba(226, 232, 240, 0.6);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -68,6 +64,8 @@
   }
 
   .dark {
+    --glass-bg: rgba(0, 0, 0, 0.4);
+    --border-heizen: rgba(51, 65, 85, 0.6);
     --background: 222 47% 8%;
     --foreground: 210 40% 98%;
 
@@ -115,6 +113,15 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    caret-color: transparent;
+    /* Hide cursor caret globally to prevent the 'caret line' issue */
+  }
+
+  /* Restore caret for input fields where typing is needed */
+  input,
+  textarea,
+  [contenteditable="true"] {
+    caret-color: auto;
   }
 }
 
@@ -123,32 +130,24 @@
     text-wrap: balance;
   }
 
-  .gradient-hero {
-    background: var(--gradient-hero);
+  /* Navbar: thin glass, almost fully transparent so background shows through */
+  .nav-glass {
+    background: rgba(255, 255, 255, 0.75);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
-  .gradient-card {
-    background: var(--gradient-card);
+  .dark .nav-glass {
+    background: rgba(0, 0, 0, 0.5);
   }
 
-  .gradient-accent {
-    background: var(--gradient-accent);
+  /* Hero Typography utility classes */
+  .hero-title {
+    @apply text-5xl md:text-7xl font-editorial font-bold tracking-tight text-slate-900 mb-6 leading-[1.1];
   }
 
-  .shadow-sentinel-sm {
-    box-shadow: var(--shadow-sm);
-  }
-
-  .shadow-sentinel-md {
-    box-shadow: var(--shadow-md);
-  }
-
-  .shadow-sentinel-lg {
-    box-shadow: var(--shadow-lg);
-  }
-
-  .shadow-sentinel-xl {
-    box-shadow: var(--shadow-xl);
+  .hero-subtext {
+    @apply text-lg text-slate-600 mb-8 max-w-md leading-relaxed;
   }
 }
 
@@ -158,55 +157,13 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes pulse-subtle {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.05);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
 .animate-fade-in-up {
   animation: fade-in-up 0.5s ease-out forwards;
 }
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 0%,
-    hsl(var(--background)) 50%,
-    hsl(var(--muted)) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Stagger animation delays for cards */
-.stagger-1 { animation-delay: 0.1s; }
-.stagger-2 { animation-delay: 0.2s; }
-.stagger-3 { animation-delay: 0.3s; }
-.stagger-4 { animation-delay: 0.4s; }
-.stagger-5 { animation-delay: 0.5s; }
-.stagger-6 { animation-delay: 0.6s; }

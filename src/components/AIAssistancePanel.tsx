@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
-import { Brain, Upload, FileText, CheckCircle, XCircle, ChevronDown, ChevronUp } from "lucide-react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Brain, Upload, FileText, CheckCircle, XCircle, ChevronDown, ChevronUp, Sparkles, AlertCircle } from "lucide-react";
+import { HeizenButton } from "./ui/heizen-button";
 import { cn } from "@/lib/utils";
 import { analyzeDocument } from "./ai-assistance/similarityEngine";
 import MatchReportDisplay from "./ai-assistance/MatchReportDisplay";
@@ -9,9 +8,11 @@ import { MatchReport } from "./ai-assistance/types";
 
 interface AIAssistancePanelProps {
   className?: string;
+  mode?: "scanner" | "default";
+  context?: "scanning" | "results" | "idle";
 }
 
-const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
+const AIAssistancePanel = ({ className, mode = "default", context = "idle" }: AIAssistancePanelProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -51,7 +52,7 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "application/msword"
     ];
-    
+
     if (!validTypes.includes(file.type)) {
       alert("Please upload a PDF or Word document (.pdf, .docx)");
       return;
@@ -79,41 +80,82 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
     setMatchReport(null);
   };
 
-  return (
-    <Card className={cn("border-border bg-card", className)}>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Brain className="h-5 w-5 text-accent" />
-            AI Similarity Detection
-          </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="lg:hidden"
-          >
-            {isCollapsed ? (
-              <ChevronDown className="h-4 w-4" />
-            ) : (
-              <ChevronUp className="h-4 w-4" />
-            )}
-          </Button>
+  if (mode === "scanner") {
+    // Context-aware help for Scanner page
+    return (
+      <div className={cn("bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm", className)}>
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+            <Sparkles className="h-4 w-4 text-indigo-600" />
+          </div>
+          <h3 className="font-editorial text-lg font-bold text-slate-900">AI Technician</h3>
         </div>
-        <p className="text-xs text-muted-foreground">
-          Upload your project document to check for duplicates
-        </p>
-      </CardHeader>
 
-      <CardContent className={cn("space-y-4", isCollapsed && "hidden lg:block")}>
+        <div className="space-y-4 text-sm text-slate-600">
+          {context === "idle" && (
+            <>
+              <p>I'm ready to analyze your document. I will check for:</p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Semantic Structure</li>
+                <li>Keyword Density</li>
+                <li>Originality Score</li>
+                <li>Citation Quality</li>
+              </ul>
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-500 mt-4">
+                <p className="font-semibold text-slate-700 mb-1">Tip:</p>
+                PDFs with clear headings yield the best results.
+              </div>
+            </>
+          )}
+          {context === "scanning" && (
+            <div className="animate-pulse space-y-3">
+              <div className="h-4 bg-slate-100 rounded w-3/4"></div>
+              <div className="h-4 bg-slate-100 rounded w-1/2"></div>
+              <p className="text-xs text-indigo-600 font-medium">Processing semantic layers...</p>
+            </div>
+          )}
+          {context === "results" && (
+            <>
+              <p>Analysis complete. Focus on the <strong>Upgrade Suggestions</strong> to improve your project's impact.</p>
+              <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-xs text-indigo-700 mt-4">
+                Need a deeper dive? <br />
+                <span className="underline cursor-pointer">Generate Full PDF Report</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("bg-white border border-slate-200 rounded-[2rem] shadow-sm overflow-hidden transition-all duration-300", className)}>
+      <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <Brain className="h-4 w-4 text-indigo-600" />
+            </div>
+            <h3 className="font-editorial text-lg font-bold text-slate-900">Quick Check</h3>
+          </div>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="lg:hidden p-1 hover:bg-slate-100 rounded-md transition-colors"
+          >
+            {isCollapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+
+      <div className={cn("p-4 space-y-4", isCollapsed && "hidden lg:block")}>
         {/* Upload Zone */}
         <div
           className={cn(
-            "relative rounded-lg border-2 border-dashed p-6 text-center transition-colors",
+            "relative rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200 group cursor-pointer",
             isDragging
-              ? "border-accent bg-accent/5"
-              : "border-border hover:border-muted-foreground/50",
-            uploadedFile && "border-solid border-accent/50 bg-accent/5"
+              ? "border-indigo-500 bg-indigo-50/30"
+              : "border-slate-200 hover:border-slate-300 hover:bg-slate-50/50",
+            uploadedFile && "border-solid border-indigo-200 bg-indigo-50/10"
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -121,15 +163,14 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
         >
           {!uploadedFile ? (
             <>
-              <Upload className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm font-medium text-foreground">
-                Upload your project document
+              <div className="mx-auto h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <Upload className="h-5 w-5 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+              </div>
+              <p className="text-sm font-medium text-slate-900">
+                Check for duplicates
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Drag and drop or click to browse
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                (.pdf, .docx)
+              <p className="mt-1 text-xs text-slate-500">
+                Drag PDF/DOCX here
               </p>
               <input
                 type="file"
@@ -140,19 +181,21 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <FileText className="h-8 w-8 text-accent" />
-              <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-foreground truncate">
+              <div className="h-10 w-10 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                <FileText className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm font-medium text-slate-900 truncate">
                   {uploadedFile.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  {(uploadedFile.size / 1024).toFixed(1)} KB
+                <p className="text-xs text-slate-500">
+                  {(uploadedFile.size / 1024).toFixed(0)} KB
                 </p>
               </div>
               {!isAnalyzing && (
-                <Button variant="ghost" size="sm" onClick={resetAnalysis}>
-                  Change
-                </Button>
+                <button onClick={resetAnalysis} className="p-1 hover:bg-slate-100 rounded-full">
+                  <XCircle className="h-4 w-4 text-slate-400" />
+                </button>
               )}
             </div>
           )}
@@ -160,21 +203,16 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
 
         {/* Analysis Status */}
         {isAnalyzing && (
-          <div className="rounded-lg bg-muted/50 p-4 text-center">
-            <div className="mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-            <p className="text-sm font-medium text-foreground">
-              Analyzing document...
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Running 5-step semantic comparison
-            </p>
-            <div className="mt-3 text-xs text-muted-foreground space-y-1">
-              <p>Step 1: Technology Check</p>
-              <p>Step 2: Abstract Intent Check</p>
-              <p>Step 3: Methodology Check</p>
-              <p>Step 4: Keyword Check</p>
-              <p>Step 5: Title Check</p>
+          <div className="rounded-xl bg-slate-50 p-4 text-center border border-slate-100">
+            <div className="mx-auto mb-3 h-8 w-8 relative">
+              <div className="absolute inset-0 rounded-full border-2 border-indigo-100 border-t-indigo-500 animate-spin" />
             </div>
+            <p className="text-sm font-medium text-slate-900">
+              Scanning Archive...
+            </p>
+            <p className="text-xs text-slate-500 mt-1">
+              Comparing against 1.2M+ projects
+            </p>
           </div>
         )}
 
@@ -182,33 +220,33 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
         {analysisResult && !isAnalyzing && (
           <div
             className={cn(
-              "rounded-lg p-4",
+              "rounded-xl p-4 border",
               analysisResult === "unique"
-                ? "bg-success/10 border border-success/20"
-                : "bg-destructive/10 border border-destructive/20"
+                ? "bg-green-50 border-green-100"
+                : "bg-red-50 border-red-100"
             )}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-2">
               {analysisResult === "unique" ? (
-                <CheckCircle className="h-5 w-5 text-success" />
+                <CheckCircle className="h-5 w-5 text-green-600" />
               ) : (
-                <XCircle className="h-5 w-5 text-destructive" />
+                <AlertCircle className="h-5 w-5 text-red-600" />
               )}
               <span
                 className={cn(
-                  "font-semibold",
-                  analysisResult === "unique" ? "text-success" : "text-destructive"
+                  "font-bold font-editorial text-sm",
+                  analysisResult === "unique" ? "text-green-800" : "text-red-800"
                 )}
               >
                 {analysisResult === "unique"
-                  ? "PROJECT IS UNIQUE"
-                  : "PROJECT ALREADY EXISTS"}
+                  ? "UNIQUE CONTRIBUTION"
+                  : "SIMILARITY DETECTED"}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className={cn("text-xs leading-relaxed", analysisResult === "unique" ? "text-green-700" : "text-red-700")}>
               {analysisResult === "unique"
-                ? "No matching project found in the database. All mandatory checks failed for existing projects."
-                : "This project matches an existing submission. See detailed report below."}
+                ? "No direct matches found. This topic appears to be original."
+                : "This project has significant overlap with existing entries."}
             </p>
           </div>
         )}
@@ -217,8 +255,8 @@ const AIAssistancePanel = ({ className }: AIAssistancePanelProps) => {
         {matchReport && !isAnalyzing && (
           <MatchReportDisplay report={matchReport} />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

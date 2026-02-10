@@ -1,41 +1,41 @@
-import { FileText, Lightbulb, Shield } from "lucide-react";
+import { FileText, Lightbulb, PenTool } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="border-t border-border bg-card py-8 mt-12">
+    <footer className="border-t border-slate-200 bg-white py-8 mt-12">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Shield className="h-4 w-4 text-primary-foreground" />
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950 shadow-lg shadow-slate-900/20 group-hover:scale-105 transition-transform duration-300">
+              <PenTool className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-semibold text-foreground">
-              SentinelFlow
+            <span className="text-2xl font-editorial font-bold tracking-tight text-slate-900">
+              Parallax
             </span>
           </div>
 
           {/* Links */}
-          <nav className="flex items-center gap-6">
+          <nav className="flex items-center gap-8">
             <a
               href="#"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="group flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600"
             >
-              <FileText className="h-4 w-4" />
-              Base Paper Fetching
+              <FileText className="h-4 w-4 stroke-2 group-hover:stroke-indigo-600" />
+              <span>Documentation</span>
             </a>
             <a
               href="#"
-              className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="group flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600"
             >
-              <Lightbulb className="h-4 w-4" />
-              Suggestions
+              <Lightbulb className="h-4 w-4 stroke-2 group-hover:stroke-indigo-600" />
+              <span>Support</span>
             </a>
           </nav>
 
           {/* Copyright */}
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} SentinelFlow. Academic integrity matters.
+          <p className="text-sm text-slate-400">
+            © {new Date().getFullYear()} Parallax. All rights reserved.
           </p>
         </div>
       </div>

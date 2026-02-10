@@ -17,7 +17,7 @@ const HeroSection = ({ searchQuery, onSearchChange }: HeroSectionProps) => {
           <p className="mb-8 text-lg text-primary-foreground/80">
             Explore academic projects and verify originality with AI-powered similarity detection
           </p>
-          
+
           {/* Search Bar */}
           <div className="relative mx-auto max-w-2xl">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
