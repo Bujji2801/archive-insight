@@ -101,10 +101,44 @@ Follow these steps to set up the development environment locally.
     ```
     The application will be available at `http://localhost:5173`.
 
-4.  **Build for Production**
-    ```bash
     npm run build
     ```
+
+### 🐍 Backend Setup (AI Analysis Engine)
+
+The "Quick Check" feature relies on a Python backend.
+
+1.  **Navigate to Project Root**
+    ```bash
+    cd archive-insight
+    ```
+
+2.  **Create and Activate Virtual Environment**
+    ```bash
+    python -m venv .venv
+    # Windows
+    .venv\Scripts\activate
+    # Mac/Linux
+    source .venv/bin/activate
+    ```
+
+3.  **Install Python Dependencies**
+    ```bash
+    pip install -r backend/requirements.txt
+    ```
+
+4.  **Start the Backend Server**
+    ```bash
+    python -m uvicorn backend.main:app --reload
+    ```
+    The API will be available at `http://localhost:8000`.
+
+5.  **Environment Variables**
+    Copy `.env.example` to `.env` and fill in your Supabase credentials:
+    ```bash
+    cp .env.example .env
+    ```
+
 
 ---
 

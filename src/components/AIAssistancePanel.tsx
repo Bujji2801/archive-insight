@@ -63,15 +63,64 @@ const AIAssistancePanel = ({ className, mode = "default", context = "idle" }: AI
     setAnalysisResult(null);
     setMatchReport(null);
 
-    // Simulate document parsing delay
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Real backend analysis
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    // Run deterministic similarity analysis
-    const report = analyzeDocument(file.name);
-    setAnalysisResult(report.finalResult);
-    setMatchReport(report);
+      const response = await fetch("http://localhost:8000/analyze", {
+        method: "POST",
+        body: formData,
+      });
 
-    setIsAnalyzing(false);
+      if (!response.ok) {
+        throw new Error("Analysis failed");
+      }
+
+      const result = await response.json();
+
+      // Map backend response to UI format
+      // Map backend response to UI format (MatchReport interface)
+      const similarityScore = 100 - result.uniqueness_score;
+
+      const comparisons = result.similar_projects.map((p: any) => ({
+        projectId: p.id,
+        projectTitle: p.title,
+        userId: "system",
+        technology: { status: "different", yourContent: "", matchedContent: "" },
+        abstractIntent: { status: "semantically similar", yourContent: result.intent, matchedContent: "Similar Intent Detected" },
+        methodology: { status: "different", yourContent: "", matchedContent: "" },
+        keywords: { percentage: Math.round(p.similarity * 100), yourKeywords: result.keywords, matchedKeywords: [], overlappingKeywords: [] },
+        title: { status: "semantically similar", yourContent: result.filename, matchedContent: p.title },
+        passedTechCheck: true,
+        passedAbstractCheck: false,
+        passedMethodologyCheck: true,
+        passedKeywordCheck: false,
+        isFullMatch: p.similarity > 0.8
+      }));
+
+      setAnalysisResult(result.status);
+      setMatchReport({
+        uploadedProjectInfo: {
+          title: result.filename,
+          technologies: [],
+          abstract: "Extracted from document...",
+          methodology: "Extracted from document...",
+          keywords: result.keywords
+        },
+        comparisons: comparisons,
+        finalResult: result.status,
+        matchedWith: comparisons.length > 0 ? comparisons[0] : null,
+        explanation: `Analysis complete. Uniqueness Score: ${result.uniqueness_score}%. Primary Intent: ${result.intent}.`
+      });
+
+    } catch (error) {
+      console.error("Error analyzing document:", error);
+      alert("Failed to analyze document. Please ensure the backend server is running.");
+      setAnalysisResult(null);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const resetAnalysis = () => {
@@ -212,41 +261,6 @@ const AIAssistancePanel = ({ className, mode = "default", context = "idle" }: AI
             </p>
             <p className="text-xs text-slate-500 mt-1">
               Comparing against 1.2M+ projects
-            </p>
-          </div>
-        )}
-
-        {/* Quick Result Display */}
-        {analysisResult && !isAnalyzing && (
-          <div
-            className={cn(
-              "rounded-xl p-4 border",
-              analysisResult === "unique"
-                ? "bg-green-50 border-green-100"
-                : "bg-red-50 border-red-100"
-            )}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              {analysisResult === "unique" ? (
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              ) : (
-                <AlertCircle className="h-5 w-5 text-red-600" />
-              )}
-              <span
-                className={cn(
-                  "font-bold font-editorial text-sm",
-                  analysisResult === "unique" ? "text-green-800" : "text-red-800"
-                )}
-              >
-                {analysisResult === "unique"
-                  ? "UNIQUE CONTRIBUTION"
-                  : "SIMILARITY DETECTED"}
-              </span>
-            </div>
-            <p className={cn("text-xs leading-relaxed", analysisResult === "unique" ? "text-green-700" : "text-red-700")}>
-              {analysisResult === "unique"
-                ? "No direct matches found. This topic appears to be original."
-                : "This project has significant overlap with existing entries."}
             </p>
           </div>
         )}
