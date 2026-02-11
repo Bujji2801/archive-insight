@@ -104,7 +104,7 @@ export default function Scanner() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                         {/* Main Scanner Card */}
-                        <div className="lg:col-span-7">
+                        <div className="lg:col-span-8">
                             <AnimatePresence mode="wait">
                                 {!file ? (
                                     <motion.div
@@ -253,7 +253,7 @@ export default function Scanner() {
                         </div>
 
                         {/* Sidebar */}
-                        <div className="lg:col-span-5 relative">
+                        <div className="lg:col-span-4 relative">
                             <div className="sticky top-32">
                                 <div className="absolute -inset-4 bg-gradient-to-b from-slate-100/50 to-transparent blur-xl -z-10 rounded-[3rem]" />
                                 <ChatbotPreview />

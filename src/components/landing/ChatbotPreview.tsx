@@ -60,7 +60,7 @@ export function ChatbotPreview() {
     };
 
     return (
-        <div className="relative flex h-[600px] w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/50 transition-all hover:shadow-slate-300/50 dark:bg-slate-900 dark:border-slate-800">
+        <div className="relative flex h-[450px] w-full flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/50 transition-all hover:shadow-slate-300/50 dark:bg-slate-900 dark:border-slate-800">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-100 bg-white/80 p-4 px-6 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
                 <div className="flex items-center gap-3">
@@ -100,15 +100,15 @@ export function ChatbotPreview() {
                             className={`flex gap-4 relative z-10 max-w-[85%] ${msg.role === "user" ? "ml-auto flex-row-reverse" : ""}`}
                         >
                             <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full border shadow-sm ${msg.role === "user"
-                                    ? "bg-slate-950 text-white border-slate-800 dark:bg-white dark:text-slate-900"
-                                    : "bg-white text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                                ? "bg-slate-950 text-white border-slate-800 dark:bg-white dark:text-slate-900"
+                                : "bg-white text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
                                 }`}>
                                 {msg.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                             </div>
 
                             <div className={`rounded-2xl p-4 shadow-sm text-sm leading-relaxed ${msg.role === "user"
-                                    ? "bg-slate-950 text-white rounded-tr-sm dark:bg-white dark:text-slate-900"
-                                    : "bg-white text-slate-700 border border-slate-200 rounded-tl-sm dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700"
+                                ? "bg-slate-950 text-white rounded-tr-sm dark:bg-white dark:text-slate-900"
+                                : "bg-white text-slate-700 border border-slate-200 rounded-tl-sm dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700"
                                 }`}>
                                 {msg.content}
                             </div>
@@ -155,8 +155,8 @@ export function ChatbotPreview() {
                         onClick={handleSend}
                         disabled={!inputValue.trim()}
                         className={`group flex h-10 w-10 items-center justify-center rounded-xl transition-all shadow-sm ${inputValue.trim()
-                                ? "bg-slate-950 text-white hover:bg-slate-800 hover:shadow-md dark:bg-white dark:text-slate-900"
-                                : "bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-700 dark:text-slate-500"
+                            ? "bg-slate-950 text-white hover:bg-slate-800 hover:shadow-md dark:bg-white dark:text-slate-900"
+                            : "bg-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-700 dark:text-slate-500"
                             }`}
                     >
                         <Send className={`h-4 w-4 transition-transform group-hover:translate-x-0.5 ${inputValue.trim() ? "" : "opacity-50"}`} />
