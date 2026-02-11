@@ -1,73 +1,138 @@
-# Welcome to your Lovable project
+<div align="center">
+  <br />
+  <a href="https://github.com/Sandeep010-hub/archive-insight">
+    <img src="https://img.shields.io/badge/PlagioSense-v2.0-indigo?style=for-the-badge&logo=appveyor" alt="PlagioSense Logo">
+  </a>
+  
+  <h1 align="center">Archive Insight</h1>
 
-## Project info
+  <p align="center">
+    <strong>Advanced Semantic Analysis & Academic Integrity Platform</strong>
+  </p>
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+  <p align="center">
+    <a href="https://react.dev/">
+      <img src="https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react" alt="React 18" />
+    </a>
+    <a href="https://www.typescriptlang.org/">
+      <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript" alt="TypeScript" />
+    </a>
+    <a href="https://tailwindcss.com/">
+      <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-38bdf8?style=flat-square&logo=tailwind-css" alt="Tailwind CSS" />
+    </a>
+    <a href="https://vitejs.dev/">
+      <img src="https://img.shields.io/badge/Vite-5.0-646cff?style=flat-square&logo=vite" alt="Vite" />
+    </a>
+    <a href="https://ui.shadcn.com/">
+      <img src="https://img.shields.io/badge/shadcn%2Fui-Latest-000000?style=flat-square&logo=shadcnui" alt="shadcn/ui" />
+    </a>
+  </p>
+</div>
 
-## How can I edit this code?
+<br />
 
-There are several ways of editing your application.
+## 📋 Overview
 
-**Use Lovable**
+**Archive Insight** (formerly PlagioSense) is an enterprise-grade academic project explorer designed to redefine how research originality is verified. Moving beyond simple keyword matching, it leverages a sophisticated **Semantic Analysis Engine** to detect idea-level duplication, assess project novelty, and provide actionable intelligence for researchers and evaluators.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+Built with a "Mastery through Curiosity" philosophy, the platform combines a high-fidelity **Editorial Design System** with powerful analytics to create a transparent, explainable, and visually stunning audit experience.
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## ✨ Key Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🧠 **Intelligent Discovery Engine**
+- **Semantic Layer Analysis:** Analyzes abstracts and project descriptions using advanced NLP techniques (Cosine Similarity, Vector Embeddings) to understand *intent* not just keywords.
+- **Context-Aware Chatbot:** An integrated AI assistant that provides real-time feedback on document structure, citation quality, and originality probability.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🎨 **Premium User Experience**
+- **Editorial Design System:** A clean, heuristic-driven UI inspired by top-tier academic journals, featuring crisp typography (Geist/Inter) and a minimalist 1px border aesthetic.
+- **Interactive Visualizations:** 
+    - **Particle Canvas Hero:** A dynamic, physics-based entry point that responds to user interaction.
+    - **Bento Grid Explorer:** A responsive, high-performance project directory with "Quick View" hover states and smooth Framer Motion transitions.
 
-Follow these steps:
+### 🛡️ **Academic Integrity Tools**
+- **Originality Scoring:** Real-time calculation of a "Uniqueness Score" based on comparison with a global archive of 1.2M+ projects.
+- **Tech Stack Recommendations:** AI-driven suggestions for modernizing project architectures to foster genuine innovation.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🛠️ Technical Architecture
 
-# Step 3: Install the necessary dependencies.
-npm i
+This project is built on a modern, type-safe stack designed for performance and scalability.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+| Layer | Technology |
+| :--- | :--- |
+| **Core Framework** | React 18, TypeScript 5.8 |
+| **Build Tooling** | Vite 5 (SWC) |
+| **Styling & Design** | Tailwind CSS 3, shadcn/ui, Lucide React |
+| **Animation** | Framer Motion (Declarative animations) |
+| **State Management** | Context API (Scalable to Zustand/Redux) |
+| **Navigation** | React Router DOM v6 |
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up the development environment locally.
+
+### Prerequisites
+- **Node.js** (v18 or higher recommended)
+- **npm** (v9 or higher) or **Bun** (optional)
+
+### Installation
+
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/Sandeep010-hub/archive-insight.git
+    cd archive-insight
+    ```
+
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    # or if you use bun
+    bun install
+    ```
+
+3.  **Start Development Server**
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
+
+4.  **Build for Production**
+    ```bash
+    npm run build
+    ```
+
+---
+
+## 📂 Project Structure
+
+The codebase follows a scalable **Feature-Based** architecture:
+
+```
+src/
+├── components/
+│   ├── ui/           # Reusable atomic components (shadcn/ui)
+│   ├── landing/      # Specific landing page sections (Hero, Chatbot)
+│   ├── scanner/      # Core scanning engine components
+│   └── explorer/     # Project discovery and filtering tools
+├── pages/            # Page-level route components (Home, Scanner, About)
+├── hooks/            # Custom React hooks for logic reuse
+├── lib/              # Utility functions and cn helpers
+└── assets/           # Static assets and global styles
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📝 License
 
-**Use GitHub Codespaces**
+This project is developed for the **Computer Science & Engineering Department Academic Year 2025–26**. All rights reserved.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+<br />
 
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+<div align="center">
+  <p>Built with ❤️ by the Archive Insight Team</p>
+</div>
