@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Mail, Hash, ArrowRight } from "lucide-react";
+import { Shield, Mail, Hash, ArrowRight, PenTool } from "lucide-react";
 import { HeizenButton } from "@/components/ui/heizen-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,12 +70,11 @@ export default function AuthForm({ initialMode = "login" }: AuthFormProps) {
         <div className="bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl shadow-slate-200/50 rounded-3xl overflow-hidden ring-1 ring-slate-900/5">
           <div className="p-8 sm:p-10">
             <div className="mb-8 flex flex-col items-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 shadow-lg shadow-indigo-500/30 mb-5 relative group">
-                <span className="font-editorial text-white text-2xl font-bold italic">P</span>
-                <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-white ring-2 ring-white" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 shadow-lg shadow-slate-900/20 mb-5 relative group transition-transform hover:scale-105 duration-300">
+                <PenTool className="h-7 w-7 text-white" />
               </div>
               <h2 className="text-2xl font-editorial font-bold text-slate-900 tracking-tight text-center">
-                {mode === 'login' ? 'Welcome Back' : 'Join PlagioSense'}
+                {mode === 'login' ? 'Welcome Back' : 'Join Parallax'}
               </h2>
               <p className="text-sm text-slate-500 mt-2 text-center max-w-[240px]">
                 {mode === 'login' ? 'Enter your credentials to access your dashboard.' : 'Create your academic profile to start scanning.'}

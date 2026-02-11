@@ -8,6 +8,7 @@ import { HeizenButton } from "@/components/ui/heizen-button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { ChatbotPreview } from "@/components/landing/ChatbotPreview";
+import { AuditReport } from "@/components/scanner/AuditReport";
 
 // Mock data for analysis results
 const mockAnalysis = {
@@ -194,57 +195,8 @@ export default function Scanner() {
                                                     </HeizenButton>
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                    {/* Key Insights Card */}
-                                                    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
-                                                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-bl-[4rem]" />
-                                                        <div className="flex items-center gap-3 mb-6 relative z-10">
-                                                            <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600">
-                                                                <Sparkles className="h-5 w-5" />
-                                                            </div>
-                                                            <h3 className="font-bold text-slate-900">Key Terms</h3>
-                                                        </div>
-                                                        <div className="flex flex-wrap gap-2 relative z-10">
-                                                            {result?.keywords.map(k => (
-                                                                <span key={k} className="px-3 py-1.5 bg-slate-50 text-slate-700 text-sm font-medium rounded-lg border border-slate-100">
-                                                                    {k}
-                                                                </span>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Score Card */}
-                                                    <div className="bg-slate-900 p-8 rounded-[2rem] text-white shadow-xl shadow-slate-900/10 flex flex-col justify-between relative overflow-hidden">
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20" />
-                                                        <div className="relative z-10 flex justify-between items-start">
-                                                            <h3 className="font-bold text-indigo-200">Uniqueness</h3>
-                                                            <CheckCircle2 className="h-6 w-6 text-green-400" />
-                                                        </div>
-                                                        <div className="relative z-10 mt-4">
-                                                            <div className="text-6xl font-editorial font-bold tracking-tighter">
-                                                                {result?.score}%
-                                                            </div>
-                                                            <p className="text-indigo-200 text-sm mt-1">Global Archive Match</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Suggestions Card */}
-                                                {result?.suggestions && (
-                                                    <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm">
-                                                        <h3 className="font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                                            Upgrade Recommendations
-                                                        </h3>
-                                                        <div className="space-y-3">
-                                                            {result.suggestions.map((suggestion, i) => (
-                                                                <div key={i} className="flex gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 text-slate-600 text-sm leading-relaxed">
-                                                                    <span className="font-bold text-indigo-500">0{i + 1}</span>
-                                                                    {suggestion}
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
+                                                {/* Audit Report Component */}
+                                                {result && <AuditReport analysis={result} />}
                                             </div>
                                         )}
                                     </motion.div>

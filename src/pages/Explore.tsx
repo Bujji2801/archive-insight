@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, List, SlidersHorizontal, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { LayoutGrid, List, SlidersHorizontal, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { SidebarFilters } from "@/components/explore/SidebarFilters";
 import ProjectCard from "@/components/ProjectCard";
@@ -12,10 +13,13 @@ import Footer from "@/components/Footer";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { projects, Project } from "@/data/projects";
+import { Project } from "@/data/projects";
 import { cn } from "@/lib/utils";
 import { HeizenButton } from "@/components/ui/heizen-button";
 import { FloatingOrbs } from "@/components/ui/FloatingOrbs";
+import { supabase } from "@/lib/supabaseClient";
+
+const ITEMS_PER_PAGE = 9;
 
 export default function Explore() {
   const [searchParams] = useSearchParams();
@@ -28,43 +32,69 @@ export default function Explore() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setSearchQuery(urlQuery);
-  }, [urlQuery]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
+  // Pagination State
+  const [page, setPage] = useState(1);
 
   const handleResetFilters = () => {
     setYearFilter("all");
     setBranchFilter("all");
     setTechFilter("all");
     setSearchQuery("");
+    setPage(1);
   };
 
-  const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        searchQuery === "" ||
-        project.title.toLowerCase().includes(searchLower) ||
-        project.description.toLowerCase().includes(searchLower) ||
-        project.keywords.some((k) => k.toLowerCase().includes(searchLower)) ||
-        project.technologies.some((t) => t.toLowerCase().includes(searchLower)) ||
-        project.hashtags.some((h) => h.toLowerCase().includes(searchLower));
-      const matchesYear = yearFilter === "all" || project.year.toString() === yearFilter;
-      const matchesBranch = branchFilter === "all" || project.branch === branchFilter;
-      const matchesTech =
-        techFilter === "all" ||
-        project.techStack.some((t) => t.toLowerCase().includes(techFilter.toLowerCase())) ||
-        project.technologies.some((t) => t.toLowerCase().includes(techFilter.toLowerCase()));
-      return matchesSearch && matchesYear && matchesBranch && matchesTech;
-    });
-  }, [searchQuery, yearFilter, branchFilter, techFilter]);
+  const { data, isLoading } = useQuery({
+    queryKey: ['projects', searchQuery, yearFilter, branchFilter, techFilter, page],
+    queryFn: async () => {
+      let query = supabase
+        .from('projects')
+        .select('*', { count: 'exact' });
+
+      if (searchQuery) {
+        query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      }
+
+      if (yearFilter !== "all") {
+        query = query.eq('year', parseInt(yearFilter));
+      }
+
+      if (branchFilter !== "all") {
+        query = query.eq('branch', branchFilter);
+      }
+
+      if (techFilter !== "all") {
+        query = query.contains('tech_stack', [techFilter]);
+      }
+
+      // Pagination Range
+      const from = (page - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      const { data, count, error } = await query.range(from, to);
+
+      if (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+      }
+
+      const mappedProjects = data.map(p => ({
+        ...p,
+        techStack: p.tech_stack, // Map back to camelCase for UI
+        userId: p.user_id,
+        problemStatement: p.problem_statement,
+        expectedOutcome: p.expected_outcome
+      })) as Project[];
+
+      return { projects: mappedProjects, totalCount: count || 0 };
+    }
+  });
+
+  const projects = data?.projects || [];
+  const totalCount = data?.totalCount || 0;
+  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+
+  const filteredProjects = projects;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -80,16 +110,16 @@ export default function Explore() {
               <div className="pb-4 border-b border-slate-100">
                 <h1 className="font-editorial text-3xl font-bold text-slate-900">Explore</h1>
                 <p className="text-sm text-slate-500 mt-1">
-                  Discover {filteredProjects.length} academic projects
+                  Discover {totalCount} academic projects
                 </p>
               </div>
               <SidebarFilters
                 yearFilter={yearFilter}
                 branchFilter={branchFilter}
                 techFilter={techFilter}
-                onYearChange={setYearFilter}
-                onBranchChange={setBranchFilter}
-                onTechChange={setTechFilter}
+                onYearChange={(val) => { setYearFilter(val); setPage(1); }}
+                onBranchChange={(val) => { setBranchFilter(val); setPage(1); }}
+                onTechChange={(val) => { setTechFilter(val); setPage(1); }}
                 onReset={handleResetFilters}
               />
             </div>
@@ -114,9 +144,9 @@ export default function Explore() {
                         yearFilter={yearFilter}
                         branchFilter={branchFilter}
                         techFilter={techFilter}
-                        onYearChange={setYearFilter}
-                        onBranchChange={setBranchFilter}
-                        onTechChange={setTechFilter}
+                        onYearChange={(val) => { setYearFilter(val); setPage(1); }}
+                        onBranchChange={(val) => { setBranchFilter(val); setPage(1); }}
+                        onTechChange={(val) => { setTechFilter(val); setPage(1); }}
                         onReset={handleResetFilters}
                       />
                     </div>
@@ -134,7 +164,7 @@ export default function Explore() {
                     type="search"
                     placeholder="Search titles, keywords, tech..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
                     className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-10 text-sm outline-none placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:indigo-500 transition-all shadow-sm"
                   />
                 </div>
@@ -201,24 +231,68 @@ export default function Explore() {
                 </HeizenButton>
               </motion.div>
             ) : (
-              <div className={cn(
-                viewMode === "grid" ? "grid gap-6 sm:grid-cols-2" : "flex flex-col gap-4"
-              )}>
-                <AnimatePresence mode="popLayout">
-                  {filteredProjects.map((project, index) => (
-                    <ProjectCard
-                      key={project.id}
-                      project={project}
-                      viewMode={viewMode}
-                      onViewDetails={(p) => {
-                        setSelectedProject(p);
-                        setIsModalOpen(true);
-                      }}
-                      animationDelay={index}
-                    />
-                  ))}
-                </AnimatePresence>
-              </div>
+              <>
+                <div className={cn(
+                  viewMode === "grid" ? "grid gap-6 sm:grid-cols-2" : "flex flex-col gap-4"
+                )}>
+                  <AnimatePresence mode="popLayout">
+                    {filteredProjects.map((project, index) => (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        viewMode={viewMode}
+                        onViewDetails={(p) => {
+                          setSelectedProject(p);
+                          setIsModalOpen(true);
+                        }}
+                        animationDelay={index}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="rounded-xl border-slate-200 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+
+                    <div className="flex items-center gap-1 mx-2">
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setPage(i + 1)}
+                          className={cn(
+                            "w-8 h-8 rounded-lg text-sm font-medium transition-all",
+                            page === i + 1
+                              ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+                              : "text-slate-500 hover:bg-slate-100 hover:text-indigo-600"
+                          )}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="rounded-xl border-slate-200 hover:bg-slate-50 hover:text-indigo-600 disabled:opacity-50"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </section>
 
